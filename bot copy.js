@@ -7,6 +7,9 @@ const FS = require('fs')
 const AXIOS = require('axios')
 const SCHEDULE = require('node-schedule')
 
+var mysql = require('mysql')
+var db = 'chaos_db'
+
 // get bot secrets
 const SECRET = JSON.parse(
   FS.readFileSync('secret.json')
@@ -19,6 +22,27 @@ const { parse } = require('path')
 const { timeStamp } = require('console')
 
 // * functions for individual commands
+function updateGuildsDB () {
+  let query = `INSERT INTO guilds (id, name)
+  VALUES
+  `
+  const args = []
+  CLIENT.guilds.cache.map(guild => {
+    args.push(`("${guild.id}", "${guild.name}")`)
+  })
+  // add variables to query
+  query += args.join(`,
+`)
+  query += `
+ON DUPLICATE KEY UPDATE
+  name = VALUES(name)`
+
+  CONNECTION.query(query, (err) => {
+    if (err) {
+      console.log('error showing table: ', err)
+    }
+  })
+}
 function generateEmbed (title = ':thought_balloon: Embed Title!') {
   const embed = new DISCORD.MessageEmbed()
     .setTitle(title)
@@ -36,11 +60,204 @@ function generateEmbed (title = ':thought_balloon: Embed Title!') {
   return embed
 }
 
+// make api calls
+var apod
+// get nasa picture of the day
+async function getSpacePhoto (props = {}) {
+  const date = new Date()
+  const todayString = `${
+    date.getFullYear()
+  }-${
+    ('0' + (date.getMonth() + 1)).slice(-2)
+  }-${
+    ('0' + date.getDate()).slice(-2)
+  }`
+
+  // get target date string if target date is set
+  let targetString
+  if (props.targetDate) {
+    // get date of target date
+    const target = new Date(props.targetDate)
+
+    targetString = `${
+      target.getFullYear()
+    }-${
+      ('0' + (target.getMonth() + 1)).slice(-2)
+    }-${
+      ('0' + target.getDate()).slice(-2)
+    }`
+  } else {
+    targetString = todayString
+  }
+
+  if (apod && apod.date === targetString) {
+    // already have APOD. send it again
+    return apod
+  } else {
+    // send a GET request
+    const data = {
+      api_key: SECRET.NASA.Password,
+      date: targetString,
+      hd: true
+    }
+
+    const host = 'https://api.nasa.gov'
+    const path = '/planetary/apod'
+
+    const args = Object.keys(data)
+      .map(key => `${key}=${data[key]}`)
+      .join('&')
+
+    try {
+      const response = await AXIOS({
+        method: 'get',
+        url: `${host}${path}?${args}`
+      })
+
+      const data = response.data
+      // if the date is the current date save object
+      if (data.date === todayString) {
+        apod = data
+      }
+      return data
+    } catch (err) {
+      return { success: false }
+    }
+  }
+}
+function postSpacePhoto () {
+  getSpacePhoto().then(() => {
+    CONNECTION.query('SELECT id, name, apod_channel_id, apod_date FROM guilds', (err, results) => {
+      if (err) {
+        console.log('Error with daily APOD from DB: ', err)
+        return
+      }
+      results.map(result => {
+        // send a message to each individual channel
+        if (result.apod_date !== apod.date) {
+          // hasn't already set a message today
+          const message = generateEmbed(':space_invader: Astronomy Picture of the Day')
+            .setURL(apod.hdurl)
+            .setDescription(apod.title)
+            .setThumbnail(apod.url)
+            .setImage(apod.hdurl)
+            .addField(
+              'Explanation:',
+              apod.explanation
+            )
+
+          if (apod.copyright) {
+            message.setFooter(`Copyright: ${apod.copyright}`)
+          }
+          CLIENT.channels.cache.get(result.apod_channel_id).send(message)
+
+          let query = `INSERT INTO guilds (id, name, apod_date)
+                  VALUES
+                `
+          query += `("${result.id}", "${result.name}", "${apod.date}")`
+          query += `
+                ON DUPLICATE KEY UPDATE
+                name = VALUES(name),
+                apod_date = VALUES(apod_date)`
+
+          CONNECTION.query(query, (err) => {
+            if (err) {
+              console.log('Error saving apod_date: ', err)
+            }
+          })
+        }
+      })
+    })
+  })
+}
+// post space photo
+// SCHEDULE.scheduleJob('0 7 * * *', () => {
+SCHEDULE.scheduleJob('51 21 * * *', () => {
+  console.log('scheduled job running')
+  postSpacePhoto()
+})
+
+const CONNECTION = mysql.createConnection({
+  host: SECRET.MySQL.Token,
+  user: SECRET.MySQL.User,
+  password: SECRET.MySQL.Password
+})
+
+// create database if it does not exist
+CONNECTION.query('CREATE DATABASE IF NOT EXISTS ??', db, (err, results) => {
+  if (err) {
+    console.log('error in creating database', err)
+    return
+  }
+
+  // console.log('created a new database', db)
+
+  // change user so I can modify database
+  CONNECTION.changeUser({
+    database: db
+  }, (err) => {
+    if (err) {
+      console.log('error in changing database', err)
+      return
+    }
+
+    // console.log('connected to database')
+
+    // query string for creating a artist table
+    // var table = ('CREATE TABLE IF NOT EXISTS Artist (id INT(100) NOT NULL AUTO_INCREMENT, name TINYTEXT, PRIMARY KEY(id))')
+
+    const table = `CREATE TABLE IF NOT EXISTS guilds(
+      id VARCHAR(25) PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      apod_channel_id VARCHAR(25),
+      apod_date VARCHAR(10)
+    )`
+
+    CONNECTION.query(table, (err) => {
+      if (err) {
+        console.log('error in creating table', err)
+        return
+      }
+
+      console.log('Connected to database table')
+    })
+
+    // write all info from guilds table
+    CONNECTION.query('SELECT * FROM guilds', (err) => {
+      if (err) {
+        console.log('error showing table: ', err)
+      }
+    })
+  })
+})
+
 // log in to discord
 CLIENT.login(SECRET.Discord.Token)
 // on discord ready
 CLIENT.on('ready', () => {
   console.log(`Logged in as ${CLIENT.user.tag}`)
+
+  // update db on bot load
+  updateGuildsDB()
+
+  postSpacePhoto()
+})
+
+// Update db when joining servers or server/channel updates/deleted
+CLIENT.on('guildCreate', () => {
+  updateGuildsDB()
+})
+CLIENT.on('guildUpdate', () => {
+  updateGuildsDB()
+})
+CLIENT.on('guildDelete', () => {
+  updateGuildsDB()
+})
+CLIENT.on('channelUpdate', () => {
+  updateGuildsDB()
+})
+CLIENT.on('channelDelete', () => {
+  updateGuildsDB()
 })
 
 // on incoming message
@@ -109,6 +326,91 @@ CLIENT.on('message', msg => {
             )
         }
         TARGET.send(response)
+        break
+      case ('admin'):
+        // check if message is in a server
+        if (msg.guild) {
+          // is in a server
+          if (msg.member.hasPermission('ADMINISTRATOR')) {
+            // author is admin
+            switch (ARGS[1]) {
+              case ('apod'):
+                // set the channel as the default apod channel
+                PROPS.query = `INSERT INTO guilds (id, name, apod_channel_id)
+                  VALUES
+                `
+                // add variables to query
+                PROPS.query += `("${msg.guild.id}", "${msg.guild.name}", "${msg.channel.id}")`
+                PROPS.query += `
+                ON DUPLICATE KEY UPDATE
+                  name = VALUES(name),
+                  apod_channel_id = VALUES(apod_channel_id)`
+
+                CONNECTION.query(PROPS.query, (err) => {
+                  response = generateEmbed(':closed_lock_with_key: Admin Commands')
+                  if (err) {
+                    console.log('error showing table: ', err)
+                    response.setDescription('There was an error.')
+                    return
+                  } else {
+                    response.setDescription('The NASA APOD will now be posted in this channel.')
+                  }
+                  TARGET.send(response)
+                })
+                break
+              default:
+                response = generateEmbed(':closed_lock_with_key: Admin Commands')
+                  .setDescription('Admin Commands: Help')
+                  .addField('/admin help', 'Get all possible admin commands')
+                  .addField('/admin apod', 'Set the default channel for NASA\'s Astronomy Picture of the Day.')
+                break
+            }
+            CONNECTION.query('SHOW tables', (err, tables) => {
+              if (err) {
+                console.log('error showing tables: ', err)
+                return
+              }
+              console.log(tables)
+            })
+          } else {
+            response = generateEmbed(':closed_lock_with_key: Admin Commands')
+              .setDescription('These commands are only available for server administrators.')
+          }
+        } else {
+          // is not in a server
+          response = generateEmbed(':closed_lock_with_key: Admin Commands')
+            .setDescription('These commands are only available within servers.')
+        }
+        if (response) {
+          TARGET.send(response)
+        }
+        break
+      case ('apod'):
+        if (ARGS[1]) {
+          PROPS.targetDate = ARGS[1]
+        }
+        getSpacePhoto(PROPS).then((data) => {
+          if (data.success === false) {
+            // failed
+            response = generateEmbed(':space_invader: Astronomy Picture of the Day')
+              .setDescription('There was an error retrieving the APOD')
+          } else {
+            response = generateEmbed(':space_invader: Astronomy Picture of the Day')
+              .setURL(data.hdurl)
+              .setDescription(data.title)
+              .setThumbnail(data.url)
+              .setImage(data.hdurl)
+              .addField(
+                'Explanation:',
+                data.explanation
+              )
+
+            if (data.copyright) {
+              response.setFooter(`Copyright: ${data.copyright}`)
+            }
+          }
+          TARGET.send(response)
+        })
         break
       case ('coin'):
         response = generateEmbed(':flying_disc: Flip a Coin')
