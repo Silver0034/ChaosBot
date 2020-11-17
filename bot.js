@@ -1,4 +1,7 @@
 'use strict'
+
+console.log('Initializing ChaosBot')
+
 const DISCORD = require('discord.js')
 const CLIENT = new DISCORD.Client()
 const FS = require('fs')
@@ -178,10 +181,12 @@ SCHEDULE.scheduleJob('51 21 * * *', () => {
 })
 
 const CONNECTION = mysql.createConnection({
-  host: SECRET.MySQL.Token,
+  host: SECRET.MySQL.Host,
   user: SECRET.MySQL.User,
   password: SECRET.MySQL.Password
 })
+
+console.log(CONNECTION)
 
 // create database if it does not exist
 CONNECTION.query('CREATE DATABASE IF NOT EXISTS ??', db, (err, results) => {
