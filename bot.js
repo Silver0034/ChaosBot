@@ -23,15 +23,12 @@ const rpg = require('./functions/rpg')
 // for handling exec
 function execCallback (err, stdout, stderr) {
   if (err) {
-    console.log('this is the err')
     console.log(err)
   }
   if (stdout) {
-    console.log('this is the stdout')
     console.log(stdout)
   }
   if (stderr) {
-    console.log('this is the stderr')
     console.log(stderr)
   }
 }
