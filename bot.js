@@ -136,7 +136,7 @@ async function getSpacePhoto (props = {}) {
   }
 }
 function postSpacePhoto () {
-  console.log(CLIENT.channels.size)
+  console.log(CLIENT)
   if (CLIENT.channels.cache.size) {
     getSpacePhoto().then(() => {
       CONNECTION.query('SELECT id, name, apod_channel_id, apod_date FROM guilds', (err, results) => {
