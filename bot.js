@@ -1,14 +1,11 @@
 'use strict'
 
-console.log('Initializing ChaosBot')
-
 const DISCORD = require('discord.js')
 const CLIENT = new DISCORD.Client()
 const FS = require('fs')
-
-// extra node package managers
 const AXIOS = require('axios')
 const SCHEDULE = require('node-schedule')
+const { exec } = require('child_process')
 
 var mysql = require('mysql')
 var db = 'chaos_db'
@@ -21,10 +18,20 @@ const SECRET = JSON.parse(
 // external files for command functions
 const RPG = require('./functions/rpg')
 const rpg = require('./functions/rpg')
-const { parse } = require('path')
-const { timeStamp } = require('console')
 
 // * functions for individual commands
+// for handling exec
+function execCallback (err, stdout, stderr) {
+  if (err) {
+    console.log(err)
+  }
+  if (stdout) {
+    console.log(stdout)
+  }
+  if (stderr) {
+    console.log(stderr)
+  }
+}
 function updateGuildsDB () {
   let query = `INSERT INTO guilds (id, name)
   VALUES
@@ -926,6 +933,18 @@ CLIENT.on('message', msg => {
         //   .addField('Name!', 'Value!')
         // console.log(PROPS.result)
         // TARGET.send(response)
+        break
+      case ('update'):
+        exec('git reset --hard', execCallback)
+
+        // and ditch any files that have been added locally too
+        exec('git clean -df', execCallback)
+
+        // now pull down the latest
+        exec('git pull -f', execCallback)
+
+        // and npm install with --production
+        exec('npm install --master', execCallback)
         break
       default:
         // help
