@@ -143,9 +143,8 @@ function postSpacePhoto () {
         return
       }
       results.map(result => {
-        console.log(result)
         // send a message to each individual channel
-        if (result.apod_date !== apod.date) {
+        if (result.apod_channel_id && result.apod_date !== apod.date) {
           // hasn't already set a message today
           const message = generateEmbed(':space_invader: Astronomy Picture of the Day')
             .setURL(apod.hdurl)
