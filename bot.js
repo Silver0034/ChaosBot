@@ -136,49 +136,51 @@ async function getSpacePhoto (props = {}) {
   }
 }
 function postSpacePhoto () {
-  getSpacePhoto().then(() => {
-    CONNECTION.query('SELECT id, name, apod_channel_id, apod_date FROM guilds', (err, results) => {
-      if (err) {
-        console.log('Error with daily APOD from DB: ', err)
-        return
-      }
-      results.map(result => {
-        // send a message to each individual channel
-        if (result.apod_date !== apod.date) {
-          // hasn't already set a message today
-          const message = generateEmbed(':space_invader: Astronomy Picture of the Day')
-            .setURL(apod.hdurl)
-            .setDescription(apod.title)
-            .setThumbnail(apod.url)
-            .setImage(apod.hdurl)
-            .addField(
-              'Explanation:',
-              apod.explanation
-            )
-
-          if (apod.copyright) {
-            message.setFooter(`Copyright: ${apod.copyright}`)
-          }
-          CLIENT.channels.cache.get(result.apod_channel_id).send(message)
-
-          let query = `INSERT INTO guilds (id, name, apod_date)
-                  VALUES
-                `
-          query += `("${result.id}", "${result.name}", "${apod.date}")`
-          query += `
-                ON DUPLICATE KEY UPDATE
-                name = VALUES(name),
-                apod_date = VALUES(apod_date)`
-
-          CONNECTION.query(query, (err) => {
-            if (err) {
-              console.log('Error saving apod_date: ', err)
-            }
-          })
+  if (CLIENT.channels.cache.size > 0) {
+    getSpacePhoto().then(() => {
+      CONNECTION.query('SELECT id, name, apod_channel_id, apod_date FROM guilds', (err, results) => {
+        if (err) {
+          console.log('Error with daily APOD from DB: ', err)
+          return
         }
+        results.map(result => {
+          // send a message to each individual channel
+          if (result.apod_date !== apod.date) {
+            // hasn't already set a message today
+            const message = generateEmbed(':space_invader: Astronomy Picture of the Day')
+              .setURL(apod.hdurl)
+              .setDescription(apod.title)
+              .setThumbnail(apod.url)
+              .setImage(apod.hdurl)
+              .addField(
+                'Explanation:',
+                apod.explanation
+              )
+
+            if (apod.copyright) {
+              message.setFooter(`Copyright: ${apod.copyright}`)
+            }
+            CLIENT.channels.cache.get(result.apod_channel_id).send(message)
+
+            let query = `INSERT INTO guilds (id, name, apod_date)
+                    VALUES
+                  `
+            query += `("${result.id}", "${result.name}", "${apod.date}")`
+            query += `
+                  ON DUPLICATE KEY UPDATE
+                  name = VALUES(name),
+                  apod_date = VALUES(apod_date)`
+
+            CONNECTION.query(query, (err) => {
+              if (err) {
+                console.log('Error saving apod_date: ', err)
+              }
+            })
+          }
+        })
       })
     })
-  })
+  }
 }
 // post space photo
 // SCHEDULE.scheduleJob('0 7 * * *', () => {
