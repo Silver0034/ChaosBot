@@ -182,7 +182,7 @@ function postSpacePhoto () {
 }
 // post space photo
 // SCHEDULE.scheduleJob('0 7 * * *', () => {
-SCHEDULE.scheduleJob('51 21 * * *', () => {
+SCHEDULE.scheduleJob('0 8 * * *', () => {
   console.log('scheduled job running')
   postSpacePhoto()
 })
