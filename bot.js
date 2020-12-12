@@ -943,8 +943,8 @@ CLIENT.on('message', msg => {
         // now pull down the latest
         exec('git pull -f', execCallback)
 
-        // and npm install with --production
-        exec('npm install --master', execCallback)
+        // and npm install
+        exec('npm install', execCallback)
         break
       default:
         // help
