@@ -183,7 +183,6 @@ function postSpacePhoto () {
 // post space photo
 // SCHEDULE.scheduleJob('0 7 * * *', () => {
 SCHEDULE.scheduleJob('0 8 * * *', () => {
-  console.log('scheduled job running')
   postSpacePhoto()
 })
 
@@ -989,4 +988,10 @@ CLIENT.on('message', msg => {
 // network and websocket errors
 CLIENT.on('sharedError', err => {
   console.error('A websocket connection encountered an error:', err)
+})
+
+// on disconnect try again
+CLIENT.on('disconnect', (err, code) => {
+  console.log('---- Bot disconnected from Discord with code', code, 'for reason:', err, '----')
+  CLIENT.connect()
 })
