@@ -7,8 +7,8 @@ const AXIOS = require('axios')
 const SCHEDULE = require('node-schedule')
 const { exec } = require('child_process')
 
-var mysql = require('mysql')
-var db = 'chaos_db'
+const mysql = require('mysql')
+const db = 'chaos_db'
 
 // get bot secrets
 const SECRET = JSON.parse(
@@ -71,7 +71,7 @@ function generateEmbed (title = ':thought_balloon: Embed Title!') {
 }
 
 // make api calls
-var apod
+let apod
 // get nasa picture of the day
 async function getSpacePhoto (props = {}) {
   const date = new Date()
@@ -176,6 +176,7 @@ function postSpacePhoto () {
             }
           })
         }
+        return true
       })
     })
   })
@@ -223,7 +224,6 @@ function setActivity () {
   ]
   const index = Math.floor(Math.random() * list.length)
   CLIENT.user.setActivity(list[index].activity, { type: list[index].type })
-    .catch(console.error)
 }
 // schedule job for every 5 minutes
 SCHEDULE.scheduleJob('*/5 * * * *', () => {
@@ -298,6 +298,7 @@ CONNECTION.connect(function (error) {
 
 // log in to discord
 CLIENT.login(SECRET.Discord.Token)
+  .catch(console.error)
 // on discord ready
 CLIENT.on('ready', () => {
   console.log(`Logged in as ${CLIENT.user.tag}`)
@@ -464,10 +465,20 @@ CLIENT.on('message', msg => {
               .setDescription('There was an error retrieving the APOD')
           } else {
             response = generateEmbed(':space_invader: Astronomy Picture of the Day')
-              .setURL(data.hdurl)
+              .setURL(data.hdurl ? data.hdurl : data.url)
               .setDescription(data.title)
               .setThumbnail(data.url)
-              .setImage(data.hdurl)
+              .setImage(data.hdurl ? data.hdurl : data.url)
+
+            if (data.media_type === 'video') {
+              response
+                .addField(
+                  'Today\'s APOD is a Video:',
+                  data.url
+                )
+            }
+
+            response
               .addField(
                 'Explanation:',
                 data.explanation
@@ -1047,4 +1058,8 @@ CLIENT.on('sharedError', err => {
 CLIENT.on('disconnect', (err, code) => {
   console.log('---- Bot disconnected from Discord with code', code, 'for reason:', err, '----')
   CLIENT.connect()
+})
+
+CLIENT.on('error', (err) => {
+  console.log(err)
 })
