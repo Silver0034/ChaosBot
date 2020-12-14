@@ -180,6 +180,56 @@ function postSpacePhoto () {
     })
   })
 }
+
+function setActivity () {
+  // pick a status
+  const list = [
+    {
+      type: 'LISTENING',
+      activity: 'commands'
+    },
+    {
+      type: 'LISTENING',
+      activity: '/ping'
+    },
+    {
+      type: 'LISTENING',
+      activity: 'screaming for /help'
+    },
+    {
+      type: 'WATCHING',
+      activity: 'you'
+    },
+    {
+      type: 'LISTENING',
+      activity: 'your commands'
+    },
+    {
+      type: 'WATCHING',
+      activity: 'the latest Astronomy Picture of the Day'
+    },
+    {
+      type: 'WATCHING',
+      activity: 'Jurassic Park... again'
+    },
+    {
+      type: 'PLAYING',
+      activity: 'the waiting game'
+    },
+    {
+      type: 'COMPETING',
+      activity: `${new Date().getFullYear()} bot of the year`
+    }
+  ]
+  const index = Math.floor(Math.random() * list.length)
+  CLIENT.user.setActivity(list[index].activity, { type: list[index].type })
+    .catch(console.error)
+}
+// schedule job for every 5 minutes
+SCHEDULE.scheduleJob('*/5 * * * *', () => {
+  setActivity()
+})
+
 // post space photo
 // SCHEDULE.scheduleJob('0 7 * * *', () => {
 SCHEDULE.scheduleJob('0 8 * * *', () => {
@@ -251,6 +301,9 @@ CLIENT.login(SECRET.Discord.Token)
 // on discord ready
 CLIENT.on('ready', () => {
   console.log(`Logged in as ${CLIENT.user.tag}`)
+
+  // set initial state
+  setActivity()
 
   // update db on bot load
   updateGuildsDB()
