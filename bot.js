@@ -226,7 +226,7 @@ function setActivity () {
     .catch(console.error)
 }
 // schedule job for every 5 minutes
-SCHEDULE.scheduleJob('*/2 * * * *', () => {
+SCHEDULE.scheduleJob('*/5 * * * *', () => {
   setActivity()
 })
 
