@@ -194,7 +194,7 @@ function setActivity () {
     },
     {
       type: 'LISTENING',
-      activity: 'screaming for /help'
+      activity: 'screams for /help'
     },
     {
       type: 'WATCHING',
@@ -226,7 +226,7 @@ function setActivity () {
     .catch(console.error)
 }
 // schedule job for every 5 minutes
-SCHEDULE.scheduleJob('*/5 * * * *', () => {
+SCHEDULE.scheduleJob('*/2 * * * *', () => {
   setActivity()
 })
 
