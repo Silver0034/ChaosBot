@@ -331,6 +331,45 @@ CLIENT.on('channelDelete', () => {
 
 // on incoming message
 CLIENT.on('message', msg => {
+  // reactions based on message content
+  switch (true) {
+    case (msg.content.toLowerCase().indexOf('69') >= 0):
+    case (msg.content.toLowerCase().indexOf('sixtynine') >= 0):
+    case (msg.content.toLowerCase().indexOf('sixty-nine') >= 0):
+      msg.react('🇳')
+      msg.react('🇮')
+      msg.react('🇨')
+      msg.react('🇪')
+      break
+    case (msg.content.toLowerCase().indexOf('420') >= 0):
+    case (msg.content.toLowerCase().indexOf('four twenty') >= 0):
+    case (msg.content.toLowerCase().indexOf('four-twenty') >= 0):
+    case (msg.content.toLowerCase().indexOf('four hundred and twenty') >= 0):
+      msg.react('🔥')
+      break
+    case (msg.content.toLowerCase().indexOf('dino') >= 0):
+      msg.react('🦕')
+      break
+    case (msg.content.toLowerCase().indexOf('tyrannosaurus') >= 0):
+    case (msg.content.toLowerCase().indexOf('rex') >= 0):
+      msg.react('🦕')
+      break
+    case (msg.content.toLowerCase().indexOf('space') >= 0):
+    case (msg.content.toLowerCase().indexOf('alien') >= 0):
+    case (msg.content.toLowerCase().indexOf('star') >= 0):
+    case (msg.content.toLowerCase().indexOf('david bowie') >= 0):
+      msg.react('👽')
+      break
+    case (msg.content.toLowerCase().indexOf('poop') >= 0):
+    case (msg.content.toLowerCase().indexOf(' poo ') >= 0):
+      msg.react('💩')
+      break
+    case (msg.content.toLowerCase().indexOf('corona') >= 0):
+      msg.react('🧼')
+      break
+    default:
+  }
+
   // check if message starts with start character
   if (msg.content.charAt(0) === '/') {
     // get first word in message
