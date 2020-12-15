@@ -331,48 +331,13 @@ CLIENT.on('channelDelete', () => {
 
 // on incoming message
 CLIENT.on('message', msg => {
-  // reactions based on message content
-  switch (true) {
-    case (msg.content.toLowerCase().indexOf('69') >= 0):
-    case (msg.content.toLowerCase().indexOf('sixtynine') >= 0):
-    case (msg.content.toLowerCase().indexOf('sixty-nine') >= 0):
-      msg.react('🇳')
-      msg.react('🇮')
-      msg.react('🇨')
-      msg.react('🇪')
-      break
-    case (msg.content.toLowerCase().indexOf('420') >= 0):
-    case (msg.content.toLowerCase().indexOf('four twenty') >= 0):
-    case (msg.content.toLowerCase().indexOf('four-twenty') >= 0):
-    case (msg.content.toLowerCase().indexOf('four hundred and twenty') >= 0):
-      msg.react('🔥')
-      break
-    case (msg.content.toLowerCase().indexOf('dino') >= 0):
-      msg.react('🦕')
-      break
-    case (msg.content.toLowerCase().indexOf('tyrannosaurus') >= 0):
-    case (msg.content.toLowerCase().indexOf('rex') >= 0):
-      msg.react('🦖')
-      break
-    case (msg.content.toLowerCase().indexOf('space') >= 0):
-    case (msg.content.toLowerCase().indexOf('alien') >= 0):
-    case (msg.content.toLowerCase().indexOf('star') >= 0):
-    case (msg.content.toLowerCase().indexOf('david bowie') >= 0):
-      msg.react('👽')
-      break
-    case (msg.content.toLowerCase().indexOf('poop') >= 0):
-      msg.react('💩')
-      break
-    case (msg.content.toLowerCase().indexOf('corona') >= 0):
-      msg.react('🧼')
-      break
-    default:
-  }
+  // set message to be lowercase for easier parsing
+  const message = msg.content.toLowerCase()
 
   // check if message starts with start character
   if (msg.content.charAt(0) === '/') {
     // get first word in message
-    const ARGS = msg.content.toLowerCase().substr(1).split(' ')
+    const ARGS = message.substr(1).split(' ')
     let response = null
     // object to send response to
     const TARGET = msg.guild ? msg.channel : msg.author
@@ -1084,6 +1049,46 @@ CLIENT.on('message', msg => {
     }
     msg.delete().catch(() => { /* do nothing because permissions issue */ })
     msg.channel.stopTyping()
+  } else {
+    // isn't a command
+
+    // react to specific words with emoji
+    switch (true) {
+      case (message.indexOf('69') >= 0):
+      case (message.indexOf('sixtynine') >= 0):
+      case (message.indexOf('sixty-nine') >= 0):
+        msg.react('🇳')
+        msg.react('🇮')
+        msg.react('🇨')
+        msg.react('🇪')
+        break
+      case (message.indexOf('420') >= 0):
+      case (message.indexOf('four twenty') >= 0):
+      case (message.indexOf('four-twenty') >= 0):
+      case (message.indexOf('four hundred and twenty') >= 0):
+        msg.react('🔥')
+        break
+      case (message.indexOf('dino') >= 0):
+        msg.react('🦕')
+        break
+      case (message.indexOf('tyrannosaurus') >= 0):
+      case (message.indexOf('rex') >= 0):
+        msg.react('🦖')
+        break
+      case (message.indexOf('space') >= 0):
+      case (message.indexOf('alien') >= 0):
+      case (message.indexOf('star') >= 0):
+      case (message.indexOf('david bowie') >= 0):
+        msg.react('👽')
+        break
+      case (message.indexOf('poop') >= 0):
+        msg.react('💩')
+        break
+      case (message.indexOf('corona') >= 0):
+        msg.react('🧼')
+        break
+      default:
+    }
   }
 })
 
