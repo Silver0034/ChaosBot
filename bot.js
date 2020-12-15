@@ -352,7 +352,7 @@ CLIENT.on('message', msg => {
       break
     case (msg.content.toLowerCase().indexOf('tyrannosaurus') >= 0):
     case (msg.content.toLowerCase().indexOf('rex') >= 0):
-      msg.react('🦕')
+      msg.react('🦖')
       break
     case (msg.content.toLowerCase().indexOf('space') >= 0):
     case (msg.content.toLowerCase().indexOf('alien') >= 0):
@@ -361,7 +361,6 @@ CLIENT.on('message', msg => {
       msg.react('👽')
       break
     case (msg.content.toLowerCase().indexOf('poop') >= 0):
-    case (msg.content.toLowerCase().indexOf(' poo ') >= 0):
       msg.react('💩')
       break
     case (msg.content.toLowerCase().indexOf('corona') >= 0):
