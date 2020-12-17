@@ -7,6 +7,9 @@ const client = new Discord.Client()
 // secrets
 const { prefix, token } = require('./secret.json')
 
+// external functions
+const reactions = require('./functions/reactions')
+
 // get all external command files
 client.commands = new Discord.Collection()
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
@@ -25,8 +28,13 @@ client.on('ready', () => {
 })
 
 client.on('message', msg => {
+  // add reactions to things that aren't commands
+
   // don't process non-commands or messages from bots
-  if (!msg.content.startsWith(prefix) || msg.author.bot) return
+  if (!msg.content.startsWith(prefix) || msg.author.bot) {
+    reactions.execute(msg)
+    return
+  }
 
   // split into arguments on space
   const args = msg.content.slice(prefix.length).trim().split(/ +/)

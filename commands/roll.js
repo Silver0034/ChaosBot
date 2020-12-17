@@ -40,18 +40,29 @@ module.exports = {
     const results = data.map(roll => {
       const rollParameters = roll.split('d')
       let value
+      let breakdown
+      let title
       if (rollParameters.length === 2) {
         const result = rollDice(Math.abs(rollParameters[0]), rollParameters[1])
         value = result.reduce((a, b) => a + b, 0)
         total += (value * Math.sign(rollParameters[0]))
+        title = `${roll} = ${value}`
+        if (result.length > 1) {
+          breakdown = `${value} = [${result.join(', ')}]`
+        } else {
+          breakdown = value
+        }
       } else {
         value = Math.abs(roll)
+        total += (value * Math.sign(roll))
+        title = `${roll} = ${value}`
+        breakdown = value
       }
 
       embed
         .addField(
-          roll,
-          `\`${value}\``
+          title,
+          `\`${breakdown}\``
         )
     })
 
