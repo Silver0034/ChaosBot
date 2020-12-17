@@ -8,6 +8,7 @@ const client = new Discord.Client()
 const { prefix, token } = require('./secret.json')
 
 // external functions
+const db = require('./functions/database')
 const reactions = require('./functions/reactions')
 
 // get all external command files
@@ -25,6 +26,8 @@ for (const file of commandFiles) {
 
 client.on('ready', () => {
   console.log(`${client.user.tag} is logged in and ready`)
+  // try to connect to database
+  console.log(db.connection)
 })
 
 client.on('message', msg => {
