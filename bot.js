@@ -27,7 +27,7 @@ for (const file of commandFiles) {
 client.on('ready', () => {
   console.log(`${client.user.tag} is logged in and ready`)
   // try to connect to database
-  console.log(db.connection)
+  db.updateGuilds()
 })
 
 client.on('message', msg => {
