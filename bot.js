@@ -3,6 +3,7 @@
 const fs = require('fs')
 const Discord = require('discord.js')
 const client = new Discord.Client()
+const schedule = require('node-schedule')
 
 // secrets
 const { prefix, token } = require('./secret.json')
@@ -10,6 +11,22 @@ const { prefix, token } = require('./secret.json')
 // external functions
 const db = require('./functions/database')
 const reactions = require('./functions/reactions')
+const activity = require('./functions/activity')
+const apod = require('./functions/apod')
+
+// * scheduled jobs
+// every 5 minutes
+schedule.scheduleJob('*/5 * * * *', () => {
+  activity.execute(client)
+})
+// every morning at 8am
+schedule.scheduleJob('0 8 * * *', () => {
+  // get astronomy picture of the day
+  apod.execute({
+    client: client,
+    connection: db.connection
+  })
+})
 
 // get all external command files
 client.commands = new Discord.Collection()
@@ -26,8 +43,21 @@ for (const file of commandFiles) {
 
 client.on('ready', () => {
   console.log(`${client.user.tag} is logged in and ready`)
-  // try to connect to database
-  db.updateGuilds()
+  // update db tables
+  db.execute(client)
+
+  // set activity
+  activity.execute(client)
+
+  // post daily apod if after time to post
+  const startHour = new Date().getHours()
+  if (startHour > 8) {
+    // get astronomy picture of the day
+    apod.execute({
+      client: client,
+      connection: db.connection
+    })
+  }
 })
 
 client.on('message', msg => {
@@ -86,7 +116,11 @@ client.on('message', msg => {
 
   // * execute the command
   try {
-    command.execute(msg, args)
+    command.execute({
+      msg: msg,
+      args: args,
+      connection: db.connection
+    })
   } catch (err) {
     console.error(err)
     msg.reply('There was an error executing that command.')

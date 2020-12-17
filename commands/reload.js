@@ -4,7 +4,8 @@ module.exports = {
   usage: '<command name>',
   args: true,
   cooldown: 1,
-  execute (msg, args) {
+  execute (props) {
+    const { msg, args } = props
     // * get command
     const commandName = args[0].toLowerCase()
     const command = msg.client.commands.get(commandName) ||

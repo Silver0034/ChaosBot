@@ -13,7 +13,8 @@ module.exports = {
   name: 'roll',
   description: ':game_die: Roll a die (or dice!)',
   usage: '<# of dice>d<# of sides>',
-  execute (msg, args) {
+  execute (props) {
+    const { msg, args } = props
     // roll a die
     const arg = args[0] ? args[0] : '1d20'
     const embed = new Discord.MessageEmbed()

@@ -39,6 +39,7 @@ function updateGuildsDB () {
   const args = []
   CLIENT.guilds.cache.map(guild => {
     args.push(`("${guild.id}", "${guild.name}")`)
+    return true
   })
   // add variables to query
   query += args.join(`,

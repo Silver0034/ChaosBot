@@ -4,7 +4,7 @@ module.exports = {
       case (msg.content.toLowerCase().indexOf('angel') >= 0):
         msg.react('😇')
         return true
-      case (msg.content.toLowerCase().indexOf('hell') >= 0):
+      case (msg.content.toLowerCase().indexOf(' hell ') >= 0):
       case (msg.content.toLowerCase().indexOf('demon') >= 0):
         msg.react('👹')
         return true
@@ -18,7 +18,7 @@ module.exports = {
         return true
       case (msg.content.toLowerCase().indexOf('sick') >= 0):
       case (msg.content.toLowerCase().indexOf('unwell') >= 0):
-      case (msg.content.toLowerCase().indexOf(' ill') >= 0):
+      case (msg.content.toLowerCase().indexOf(' ill ') >= 0):
         msg.react('🤒')
         return true
       case (msg.content.toLowerCase().indexOf('cold') >= 0):
@@ -68,10 +68,8 @@ module.exports = {
       case (msg.content.toLowerCase().indexOf('rex') >= 0):
         msg.react('🦖')
         return true
-      case (msg.content.toLowerCase().indexOf('space') >= 0):
       case (msg.content.toLowerCase().indexOf('alien') >= 0):
-      case (msg.content.toLowerCase().indexOf('star') >= 0):
-      case (msg.content.toLowerCase().indexOf('bowie') >= 0):
+      case (msg.content.toLowerCase().indexOf('david bowie') >= 0):
         msg.react('👽')
         return true
       case (msg.content.toLowerCase() === 'poo'):
@@ -79,18 +77,13 @@ module.exports = {
         msg.react('💩')
         return true
       case (msg.content.toLowerCase().indexOf('corona') >= 0):
+      case (msg.content.toLowerCase().indexOf('covid') >= 0):
         msg.react('🦠')
         msg.react('🧼')
         msg.react('😷')
         return true
       case (msg.content.toLowerCase().indexOf('soap') >= 0):
         msg.react('🧼')
-        return true
-      case (msg.content.toLowerCase().indexOf('dislike') >= 0):
-        msg.react('👎')
-        return true
-      case (msg.content.toLowerCase().indexOf('like') >= 0):
-        msg.react('👍')
         return true
       case (msg.content.toLowerCase() === 'ok'):
         msg.react('👌')
@@ -132,9 +125,6 @@ module.exports = {
       case (msg.content.toLowerCase().indexOf('glove') >= 0):
         msg.react('🧤')
         return true
-      case (msg.content.toLowerCase().indexOf('ring') >= 0):
-        msg.react('💍')
-        return true
       case (msg.content.toLowerCase().indexOf('monkey') >= 0):
         msg.react('🐵')
         return true
@@ -162,7 +152,7 @@ module.exports = {
         msg.react('🥑')
         return true
       case (msg.content.toLowerCase().indexOf('eggplant') >= 0):
-      case (msg.content.toLowerCase().indexOf('dick') >= 0):
+      case (msg.content.toLowerCase().indexOf('peepee') >= 0):
         msg.react('🍆')
         return true
       case (msg.content.toLowerCase().indexOf('peach') >= 0):

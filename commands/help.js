@@ -6,8 +6,9 @@ module.exports = {
   description: ':helmet_with_cross: Get a list of all my commands, or get help with a specific command',
   aliases: ['commands'],
   usage: '[command name]',
-  cooldown: 5,
-  execute (msg, args) {
+  cooldown: 2,
+  execute (props) {
+    const { msg, args } = props
     const { commands } = msg.client
     const embed = new Discord.MessageEmbed()
       .setColor('#43b581')

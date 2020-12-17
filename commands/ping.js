@@ -3,7 +3,8 @@ module.exports = {
   description: ':ping_pong: I may or may not say "pong".',
   aliases: ['pong'],
   cooldown: 1,
-  execute (msg, args) {
+  execute (props) {
+    const { msg } = props
     switch (Math.round(Math.random() * 10)) {
       case (1):
       case (2):

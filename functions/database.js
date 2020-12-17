@@ -1,7 +1,4 @@
-console.log('try to connect to database!!')
 const { MySQL } = require('../secret.json')
-const Discord = require('discord.js')
-const client = new Discord.Client()
 
 const mysql = require('mysql')
 const db = 'chaos_db'
@@ -68,7 +65,7 @@ CONNECTION.connect(function (error) {
 
 exports.connection = CONNECTION
 
-exports.updateGuilds = function () {
+exports.execute = function (client) {
   let query = 'INSERT INTO guilds (id, name) VALUES'
   const args = []
   client.guilds.cache.map(guild => {
@@ -85,20 +82,3 @@ exports.updateGuilds = function () {
     }
   })
 }
-
-// Update db when joining servers or server/channel updates/deleted
-client.on('guildCreate', () => {
-  exports.updateGuilds()
-})
-client.on('guildUpdate', () => {
-  exports.updateGuilds()
-})
-client.on('guildDelete', () => {
-  exports.updateGuilds()
-})
-client.on('channelUpdate', () => {
-  exports.updateGuilds()
-})
-client.on('channelDelete', () => {
-  exports.updateGuilds()
-})
