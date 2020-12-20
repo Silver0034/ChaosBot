@@ -157,4 +157,5 @@ process.on('uncaughtException', async function (err) {
     Error:\`\`\`${err.message}\`\`\`
     Stack:\`\`\`${err.stack}\`\`\``
   )
+  console.log(err)
 })

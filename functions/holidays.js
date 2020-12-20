@@ -1,4 +1,4 @@
-const { HolidayKey } = require('../secret.json')
+const { holidayKey } = require('../secret.json')
 
 const Discord = require('discord.js')
 const axios = require('axios')
@@ -14,7 +14,7 @@ async function getHoliday () {
 
   // send a GET request for the image of the selected date
   const data = {
-    api_key: HolidayKey,
+    api_key: holidayKey,
     country: 'US',
     day: day,
     month: month,
@@ -27,20 +27,16 @@ async function getHoliday () {
     .map(key => `${key}=${data[key]}`)
     .join('&')
 
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${host}${path}?${args}`
-    })
+  const response = await axios({
+    method: 'get',
+    url: `${host}${path}?${args}`
+  })
 
-    // save object
-    module.exports.holidays = response.data.response.holidays
+  // save object
+  module.exports.holidays = response.data.response.holidays
 
-    // return apod
-    return response.data.response.holidays
-  } catch (err) {
-    return { success: false }
-  }
+  // return apod
+  return response.data.response.holidays
 }
 
 function createEmbed (client, holidays) {
