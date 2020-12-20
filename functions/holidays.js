@@ -44,6 +44,7 @@ async function getHoliday () {
 
 function createEmbed (client, holidays) {
   const holiday = holidays[0]
+  console.log(holiday)
   const embed = new Discord.MessageEmbed()
     .setTitle(`:calendar_spiral: ${holiday.name}`)
     .setColor('#43b581')
