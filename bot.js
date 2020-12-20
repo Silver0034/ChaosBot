@@ -6,7 +6,7 @@ const client = new Discord.Client()
 const schedule = require('node-schedule')
 
 // secrets
-const { prefix, token } = require('./secret.json')
+const { authorID, prefix, token } = require('./secret.json')
 
 // external functions
 const db = require('./functions/database')
@@ -147,3 +147,14 @@ client.on('message', msg => {
 })
 
 client.login(token)
+
+process.on('uncaughtException', async function (err) {
+  const user = await client.users.fetch(authorID)
+
+  await client.users.cache.get(user.id).send(
+    `**Alert: There was an uncaught error**
+
+    Error:\`\`\`${err.message}\`\`\`
+    Stack:\`\`\`${err.stack}\`\`\``
+  )
+})

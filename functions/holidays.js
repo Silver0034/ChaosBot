@@ -1,4 +1,5 @@
 const { HolidayKey } = require('../secret.json')
+
 const Discord = require('discord.js')
 const axios = require('axios')
 
@@ -44,7 +45,6 @@ async function getHoliday () {
 
 function createEmbed (client, holidays) {
   const holiday = holidays[0]
-  console.log(holiday)
   const embed = new Discord.MessageEmbed()
     .setTitle(`:calendar_spiral: ${holiday.name}`)
     .setColor('#43b581')
@@ -74,9 +74,7 @@ module.exports = {
         }
 
         // don't send if not a holiday
-        if (holidays.length === 0) return
-
-        console.log(results)
+        if (!holidays || holidays.length === 0) return
 
         const embed = createEmbed(client, holidays)
 
