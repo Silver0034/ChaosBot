@@ -15,7 +15,7 @@ async function getHoliday () {
   const data = {
     api_key: HolidayKey,
     country: 'US',
-    day: 25,
+    day: day,
     month: month,
     year: year
   }
