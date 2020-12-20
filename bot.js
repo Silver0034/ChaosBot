@@ -13,6 +13,7 @@ const db = require('./functions/database')
 const reactions = require('./functions/reactions')
 const activity = require('./functions/activity')
 const apod = require('./functions/apod')
+const holidays = require('./functions/holidays')
 
 // * scheduled jobs
 // every 5 minutes
@@ -23,6 +24,11 @@ schedule.scheduleJob('*/5 * * * *', () => {
 schedule.scheduleJob('0 8 * * *', () => {
   // get astronomy picture of the day
   apod.execute({
+    client: client,
+    connection: db.connection
+  })
+
+  holidays.execute({
     client: client,
     connection: db.connection
   })
@@ -54,6 +60,11 @@ client.on('ready', () => {
   if (startHour > 8) {
     // get astronomy picture of the day
     apod.execute({
+      client: client,
+      connection: db.connection
+    })
+
+    holidays.execute({
       client: client,
       connection: db.connection
     })

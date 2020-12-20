@@ -36,14 +36,16 @@ CONNECTION.connect(function (error) {
         // query string for creating a artist table
         // var table = ('CREATE TABLE IF NOT EXISTS Artist (id INT(100) NOT NULL AUTO_INCREMENT, name TINYTEXT, PRIMARY KEY(id))')
 
-        const table = `CREATE TABLE IF NOT EXISTS guilds(
-      id VARCHAR(25) PRIMARY KEY,
-      name VARCHAR(100) NOT NULL,
-      apod_channel_id VARCHAR(25),
-      apod_date VARCHAR(10)
-    )`
+        const query = `CREATE TABLE IF NOT EXISTS guilds(
+          id VARCHAR(25) PRIMARY KEY,
+          name VARCHAR(100) NOT NULL,
+          apod_channel_id VARCHAR(25),
+          apod_date VARCHAR(10),
+          holiday_channel_id VARCHAR(25),
+          holiday_date VARCHAR(10)
+        );`
 
-        CONNECTION.query(table, (err) => {
+        CONNECTION.query(query, (err) => {
           if (err) {
             console.log('error in creating table', err)
             return
@@ -51,6 +53,34 @@ CONNECTION.connect(function (error) {
 
           console.log('Connected to database table')
         })
+
+        // * replace columns if they don't exist
+        CONNECTION.query('ALTER TABLE guilds ADD COLUMN IF NOT EXISTS apod_channel_id VARCHAR(25);', (err) => {
+          if (err) {
+            console.log('error updating column: ', err)
+          }
+        })
+        CONNECTION.query('ALTER TABLE guilds ADD COLUMN IF NOT EXISTS apod_date VARCHAR(10);', (err) => {
+          if (err) {
+            console.log('error updating column: ', err)
+          }
+        })
+        CONNECTION.query('ALTER TABLE guilds ADD COLUMN IF NOT EXISTS holiday_channel_id VARCHAR(25);', (err) => {
+          if (err) {
+            console.log('error updating column: ', err)
+          }
+        })
+        CONNECTION.query('ALTER TABLE guilds ADD COLUMN IF NOT EXISTS holiday_date VARCHAR(10);', (err) => {
+          if (err) {
+            console.log('error updating column: ', err)
+          }
+        })
+
+        // query += 'ALTER TABLE guilds ADD COLUMN IF NOT EXISTS apod_channel_id VARCHAR(25);'
+
+        // query += 'ALTER TABLE guilds ADD COLUMN IF NOT EXISTS apod_date VARCHAR(10);'
+        // query += 'ALTER TABLE guilds ADD COLUMN IF NOT EXISTS holiday_channel_id VARCHAR(25);'
+        // query += 'ALTER TABLE guilds ADD COLUMN IF NOT EXISTS holiday_date VARCHAR(10);'
 
         // write all info from guilds table
         CONNECTION.query('SELECT * FROM guilds', (err) => {
