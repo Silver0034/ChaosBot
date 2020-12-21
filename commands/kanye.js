@@ -14,7 +14,8 @@ function createEmbed (msg, quote) {
       'https://cdn.discordapp.com/icons/227552928343392256/051a39fd0c470e72a9ff52c0ddb08bf6.webp?size=256'
     )
     .setTimestamp()
-    .setDescription(`${msg.author} | ${quote.quote}`)
+    .setDescription(`${msg.author}
+    ${quote.quote}`)
 
   return embed
 }
