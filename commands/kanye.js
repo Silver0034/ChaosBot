@@ -15,7 +15,7 @@ function createEmbed (msg, quote) {
     )
     .setTimestamp()
     .setDescription(`${msg.author}
-    ${quote.quote}`)
+    \`\`\`${quote.quote}\`\`\``)
 
   return embed
 }
