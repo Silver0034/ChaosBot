@@ -4,6 +4,7 @@ const fs = require('fs')
 const Discord = require('discord.js')
 const client = new Discord.Client()
 const schedule = require('node-schedule')
+const exec = require('child_process').exec
 
 // secrets
 const { authorID, prefix, token } = require('./secret.json')
@@ -158,4 +159,21 @@ process.on('uncaughtException', async function (err) {
     Stack:\`\`\`${err.stack}\`\`\``
   )
   console.log(err)
+})
+
+client.on('shardError', async err => {
+  console.error('A websocket connection encountered an error:', err)
+  const user = await client.users.fetch(authorID)
+
+  await client.users.cache.get(user.id).send(
+    `**Alert: There was an uncaught error**
+      I rebooted after sending this message.
+
+    Error:\`\`\`${err.message}\`\`\`
+    Stack:\`\`\`${err.stack}\`\`\`
+    JSON: ${JSON.stringify(err)}`
+  )
+
+  // reboot everything
+  exec('sudo reboot')
 })
