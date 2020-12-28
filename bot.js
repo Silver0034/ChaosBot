@@ -155,10 +155,9 @@ process.on('uncaughtException', async function (err) {
 
   const message = `**Alert: There was an error**
 
-  Error:
   Error:\`\`\`${err.message.replace(/`/g, '"')}\`\`\`
-  Stack:\`\`\`${err.stack.replace(/`/g, '"')}\`\`\`
-  JSON: \`\`\`${JSON.stringify(err).replace(/`/g, '"')}\`\`\`
+  
+  \`\`\`${JSON.stringify(err).replace(/`/g, '"')}\`\`\`
 
   I rebooted after this error
   `
