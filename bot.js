@@ -149,30 +149,28 @@ client.on('message', msg => {
 
 client.login(token)
 
+// * send bot author a DM on error and reboot
 process.on('uncaughtException', async function (err) {
   const user = await client.users.fetch(authorID)
 
-  await client.users.cache.get(user.id).send(
-    `**Alert: There was an uncaught error**
+  const message = `**Alert: There was an error**
 
-    Error:\`\`\`${err.message}\`\`\`
-    Stack:\`\`\`${err.stack}\`\`\``
-  )
+  Error:
+  Error:\`\`\`${err.message.replace(/`/g, '"')}\`\`\`
+  Stack:\`\`\`${err.stack.replace(/`/g, '"')}\`\`\`
+  JSON: \`\`\`${JSON.stringify(err).replace(/`/g, '"')}\`\`\`
+
+  I rebooted after this error
+  `
+
+  const splitAt = 1500
+  const segments = message.match(new RegExp('.{1,' + splitAt + '}', 'g'))
+  const l = segments.length
+  for (let i = 0; i < l; i++) {
+    await client.users.cache.get(user.id).send(segments[i])
+  }
+
   console.log(err)
-})
-
-client.on('shardError', async err => {
-  console.error('A websocket connection encountered an error:', err)
-  const user = await client.users.fetch(authorID)
-
-  await client.users.cache.get(user.id).send(
-    `**Alert: There was an uncaught error**
-      I rebooted after sending this message.
-
-    Error:\`\`\`${err.message}\`\`\`
-    Stack:\`\`\`${err.stack}\`\`\`
-    JSON: ${JSON.stringify(err)}`
-  )
 
   // reboot everything
   exec('sudo reboot')
