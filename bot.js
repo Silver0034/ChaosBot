@@ -164,8 +164,7 @@ client.login(token)
 process.on('uncaughtException', async function (err) {
 	const user = await client.users.fetch(authorID)
 
-	const message = `**Alert: There was an error**
-	Error:\`\`\`${err.toString()}\`\`\``
+	const message = `**Alert: There was an error**\nError:\`\`\`${err.toString()}\`\`\``
 
 	await client.users.cache.get(user.id).send(message)
 })
