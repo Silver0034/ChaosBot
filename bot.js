@@ -165,23 +165,7 @@ process.on('uncaughtException', async function (err) {
 	const user = await client.users.fetch(authorID)
 
 	const message = `**Alert: There was an error**
+	Error:\`\`\`${err.toString()}\`\`\``
 
-  Error:\`\`\`${err.message.replace(/`/g, '"')}\`\`\`
-  
-  \`\`\`${JSON.stringify(err).replace(/`/g, '"')}\`\`\`
-
-  I rebooted after this error
-  `
-
-	const splitAt = 1500
-	const segments = message.match(new RegExp('.{1,' + splitAt + '}', 'g'))
-	const l = segments.length
-	for (let i = 0; i < l; i++) {
-		await client.users.cache.get(user.id).send(segments[i])
-	}
-
-	console.log(err)
-
-	// reboot everything
-	exec('sudo reboot')
+	await client.users.cache.get(user.id).send(message)
 })
