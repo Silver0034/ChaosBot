@@ -14,7 +14,7 @@ const db = require('./functions/database')
 const reactions = require('./functions/reactions')
 const activity = require('./functions/activity')
 const apod = require('./functions/apod')
-// const holidays = require('./functions/holidays')
+const holidays = require('./functions/holidays')
 
 // * scheduled jobs
 // every 5 minutes
@@ -26,13 +26,13 @@ schedule.scheduleJob('0 8 * * *', () => {
 	// get astronomy picture of the day
 	apod.execute({
 		client: client,
-		connection: db.connection,
+		connection: db.connection
 	})
 
-	// holidays.execute({
-	// 	client: client,
-	// 	connection: db.connection,
-	// })
+	holidays.execute({
+		client: client,
+		connection: db.connection
+	})
 })
 
 // get all external command files
@@ -64,13 +64,13 @@ client.on('ready', () => {
 		// get astronomy picture of the day
 		apod.execute({
 			client: client,
-			connection: db.connection,
+			connection: db.connection
 		})
 
-		// holidays.execute({
-		//   client: client,
-		//   connection: db.connection
-		// })
+		holidays.execute({
+			client: client,
+			connection: db.connection
+		})
 	}
 })
 
@@ -142,7 +142,7 @@ client.on('message', (msg) => {
 		command.execute({
 			msg: msg,
 			args: args,
-			connection: db.connection,
+			connection: db.connection
 		})
 	} catch (err) {
 		console.error(err)
@@ -164,7 +164,11 @@ client.login(token)
 process.on('uncaughtException', async function (err) {
 	const user = await client.users.fetch(authorID)
 
-	const message = `**Alert: There was an error**\nError:\`\`\`${err.toString()}\`\`\``
+	const message = `**Alert: There was an error**\nError:\`\`\`${JSON.stringify(
+		err,
+		null,
+		2
+	)}\`\`\``
 
 	await client.users.cache.get(user.id).send(message)
 })
