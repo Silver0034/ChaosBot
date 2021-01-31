@@ -24,15 +24,23 @@ schedule.scheduleJob('*/5 * * * *', () => {
 // every morning at 8am
 schedule.scheduleJob('0 8 * * *', () => {
 	// get astronomy picture of the day
-	apod.execute({
-		client: client,
-		connection: db.connection
-	})
+	try {
+		apod.execute({
+			client: client,
+			connection: db.connection
+		})
+	} catch (err) {
+		logError(err)
+	}
 
-	holidays.execute({
-		client: client,
-		connection: db.connection
-	})
+	try {
+		holidays.execute({
+			client: client,
+			connection: db.connection
+		})
+	} catch (err) {
+		logError(err)
+	}
 })
 
 // get all external command files
@@ -161,7 +169,7 @@ client.on('message', (msg) => {
 client.login(token)
 
 // * send bot author a DM on error and reboot
-process.on('uncaughtException', async function (err) {
+async function logError(err) {
 	const user = await client.users.fetch(authorID)
 
 	const message = `**Alert: There was an error**\nError:\`\`\`${JSON.stringify(
@@ -171,4 +179,5 @@ process.on('uncaughtException', async function (err) {
 	)}\`\`\``
 
 	await client.users.cache.get(user.id).send(message)
-})
+}
+process.on('uncaughtException', logError)
