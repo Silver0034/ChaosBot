@@ -20,6 +20,19 @@ const holidays = require('./functions/holidays')
 // every 5 minutes
 schedule.scheduleJob('*/5 * * * *', () => {
 	activity.execute(client)
+	if (new Date().getHours() > 8) {
+		// get astronomy picture of the day
+		apod.execute({
+			client: client,
+			connection: db.connection
+		})
+
+		// get holiday for the day
+		holidays.execute({
+			client: client,
+			connection: db.connection
+		})
+	}
 })
 // every morning at 8am
 schedule.scheduleJob('0 8 * * *', () => {
