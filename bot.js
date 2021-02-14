@@ -14,7 +14,7 @@ const db = require('./functions/database')
 const reactions = require('./functions/reactions')
 const activity = require('./functions/activity')
 const apod = require('./functions/apod')
-const holidays = require('./functions/holidays')
+// const holidays = require('./functions/holidays')
 
 // * scheduled jobs
 // every 5 minutes
@@ -27,11 +27,11 @@ schedule.scheduleJob('*/5 * * * *', () => {
 			connection: db.connection
 		})
 
-		// get holiday for the day
-		holidays.execute({
-			client: client,
-			connection: db.connection
-		})
+		// // get holiday for the day
+		// holidays.execute({
+		// 	client: client,
+		// 	connection: db.connection
+		// })
 	}
 })
 // every morning at 8am
@@ -46,14 +46,14 @@ schedule.scheduleJob('0 8 * * *', () => {
 		logError(err)
 	}
 
-	try {
-		holidays.execute({
-			client: client,
-			connection: db.connection
-		})
-	} catch (err) {
-		logError(err)
-	}
+	// try {
+	// 	holidays.execute({
+	// 		client: client,
+	// 		connection: db.connection
+	// 	})
+	// } catch (err) {
+	// 	logError(err)
+	// }
 })
 
 // get all external command files
@@ -88,10 +88,10 @@ client.on('ready', () => {
 			connection: db.connection
 		})
 
-		holidays.execute({
-			client: client,
-			connection: db.connection
-		})
+		// holidays.execute({
+		// 	client: client,
+		// 	connection: db.connection
+		// })
 	}
 })
 
